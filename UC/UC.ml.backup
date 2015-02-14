@@ -1,5 +1,4 @@
 (* test by running "make test.byte" in the directory containing this file*)
-(* the test on local host at "http://localhost:8080" *)
 
 {shared{
   open Eliom_lib
