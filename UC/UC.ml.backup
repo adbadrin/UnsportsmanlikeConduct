@@ -1,4 +1,29 @@
 (* test by running "make test.byte" in the directory containing this file*)
+(* the test on local host at "http://localhost:8080" *)
+
+(* Bootstrap CDN link *)
+let bootstrap_cdn_link =
+  let cdn_link = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" in
+  link ~rel:[`Stylesheet] ~href:(Xml.uri_of_string cdn_link)
+  ()
+
+(* Login Button *)
+let login = link_to ~address:"login"
+                    ~content:([Raw.span ~a:[a_class ["glyphicon glyphicon-log-in"]]
+                                        [pcdata " Login via Facebook"]])
+
+
+(* Header Navbar html skeleton *)
+let header_navbar_skeleton =
+  nav ~a:[a_class ["navbar navbar-inverse navbar-fixed-top"]]
+  [div ~a:[a_class ["container-fluid"]]
+   [div ~a:[a_class ["navbar-header"]] [news_link];
+    div
+    [ul ~a:[a_class ["nav navbar-nav navbar-right"]]
+     [li [login]] (* /ul *)
+    ] (* /div *)
+   ] (* /div *)
+  ] (* /div *)
 
 {shared{
   open Eliom_lib
