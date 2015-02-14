@@ -8,3 +8,6 @@ Thomas' goals:
 Deets' goals:
 (1) Learn OCaml
 (2) Download Eliom, mySQL and Lwt packages via OPAM
+
+
+Modifying for a test of shit.
