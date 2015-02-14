@@ -1,5 +1,5 @@
 # UnsportsmanlikeConduct
-
+Use OCaml compiler v4.01.0
 Thomas' goals:
 (1) Set up Eliom framework for UC
 (2) Get homepage & User Login Set Up
@@ -10,4 +10,3 @@ Deets' goals:
 (2) Download Eliom, mySQL and Lwt packages via OPAM
 
 
-Modifying for a test of shit.
