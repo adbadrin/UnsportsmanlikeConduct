@@ -1,6 +1,18 @@
 (* test by running "make test.byte" in the directory containing this file*)
 (* the test on local host at "http://localhost:8080" *)
 
+open Eliom_lib
+open Eliom_content
+open Html5.D
+
+(* Main page service *)
+let main_page_service =
+  Eliom_service.App.service ~path:["main"] ~get_params:Eliom_parameter.unit ()
+
+(* Login page service *)
+let login_page_service =
+  Eliom_service.App.service ~path:["login"] ~get_params:Eliom_parameter.unit ()
+
 (* Bootstrap CDN link *)
 let bootstrap_cdn_link =
   let cdn_link = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" in
@@ -8,10 +20,10 @@ let bootstrap_cdn_link =
   ()
 
 (* Login Button *)
-let login = link_to ~address:"login"
-                    ~content:([Raw.span ~a:[a_class ["glyphicon glyphicon-log-in"]]
-                                        [pcdata " Login via Facebook"]])
-
+let login =
+  link_to 
+    ~address:"login"
+    ~content:([Raw.span ~a:[a_class ["glyphicon glyphicon-log-in"]] [pcdata " Login via Facebook"]])
 
 (* Header Navbar html skeleton *)
 let header_navbar_skeleton =
@@ -25,11 +37,7 @@ let header_navbar_skeleton =
    ] (* /div *)
   ] (* /div *)
 
-{shared{
-  open Eliom_lib
-  open Eliom_content
-  open Html5.D
-}}
+(* TODO: Register main_page_service *)
 
 module UC_app =
   Eliom_registration.App (
