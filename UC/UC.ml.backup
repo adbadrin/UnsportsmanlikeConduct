@@ -6,6 +6,7 @@
 
 open Eliom_lib
 open Eliom_content
+open Eliom_parameter
 open Html5.D
 
 
@@ -33,9 +34,8 @@ let login_page_service =
 (* Gameplay page service *)
 (*
 let gameplay_page_service =
-  Eliom_service.App.service ~path:["gameplay"] ~get_params:Eliom_parameter.unit ()
-  *)
-
+  Eliom_service.App.service ~path:["gameplay"] ~get_params:(string "code")
+*)
 
 (* create a link *)
 let link_to ~address ~content =
@@ -59,21 +59,8 @@ let login =
 let facebook_login =
   Html5.F.Raw.a 
     ~a:[a_href (Xml.uri_of_string ("https://www.facebook.com/dialog/oauth?client_id=" ^ 
-                                   facebook_app_id ^ "&redirect_uri=http://localhost:8080/login"))]
+                                   facebook_app_id ^ "&redirect_uri=http://localhost:8080/gameplay"))]
       [pcdata "Login with Facebook"]
-(*
-  Eliom_content.Html5.D.a
-    (Eliom_service.Http.external_service
-      ~prefix:("https://www.facebook.com/dialog/oauth?client_id=" ^ 
-               facebook_app_id ^ "&redirect_uri=http://localhost:8080/login")
-      ~path:["facebook_login"]
-      ~get_params:Eliom_parameter.unit
-    ())
-    (*
-    [pcdata "Login with Facebook!"]
-    ["Facebook"]
-    *)
-*)
 
 
 (* Header Navbar html skeleton *)
@@ -83,7 +70,7 @@ let header_navbar_skeleton =
    [div ~a:[a_class ["navbar-header"]] [];
     div
     [ul ~a:[a_class ["nav navbar-nav navbar-right"]]
-     [li [facebook_login]] (* /ul *)
+     [li ~a:[a_class ["btn btn-block btn-social btn-facebook"]] [facebook_login]] (* /ul *)
     ] (* /div *)
    ] (* /div *)
   ] (* /div *)
@@ -104,7 +91,7 @@ let footer_navbar_skeleton =
 
 
 let subtitle =
-  "Play with your friends or play with strangers!"
+  "Don't play with yourself, play with your friends!"
 
 
 (* Placeholder for next page *)
@@ -185,6 +172,7 @@ let () =
             footer_navbar_skeleton
            ](* /body *))))
 
+
 (* Register login_page_service *)
 let () =
   UC_app.register
@@ -205,6 +193,32 @@ let () =
            ]; (* /div *)
            login_form_container
           ] (* /body *)
+          )
+        )
+    )
+
+
+(* Register gameplay_service *)
+let gameplay =
+  Eliom_registration.Html5.register_service
+    ~path:["gameplay"]
+    ~get_params:(string "code")
+    (fun fb_code () ->
+      Lwt.return
+        (*Html5.D.(html*)
+        (Eliom_tools.F.html
+          ~title:"Unsportsmanlike Conduct - Play Ball!"
+          ~css:[["css"; "UC.css"]]
+          ~other_head:[bootstrap_cdn_link]
+          Html5.F.(
+           body
+           [header_navbar_skeleton;
+            div ~a:[a_class ["container"; "margin_top_50px"]]
+            [div ~a:[a_class ["page-header"]]
+             [h1 [pcdata ("The code sent from facebook is: " ^ fb_code)]
+             ] (* /div *)
+            ] (* /div *)
+           ] (* /body *)
           )
         )
     )
