@@ -49,11 +49,19 @@ let bootstrap_cdn_link =
   ()
 
 
+(* FontAwesome CDN link *)
+let font_awesome_cdn_link =
+  let cdn_link = "//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" in
+  link ~rel:[`Stylesheet] ~href:(Xml.uri_of_string cdn_link)
+  ()
+
+
 (* Login Button *)
 let login =
   link_to 
     ~address:"login" 
     ~content:([Raw.span ~a:[a_class ["glyphicon glyphicon-log-in"]] [pcdata " Login with Facebook"]])
+
 
 (* facebook login button *)
 let facebook_login =
@@ -61,6 +69,15 @@ let facebook_login =
     ~a:[a_href (Xml.uri_of_string ("https://www.facebook.com/dialog/oauth?client_id=" ^ 
                                    facebook_app_id ^ "&redirect_uri=http://localhost:8080/gameplay"))]
       [pcdata "Login with Facebook"]
+
+let facebook_login_2 =
+  let open Html5.F in
+  div ~a:[a_class ["social-buttons"]]
+  [Raw.a ~a:[a_class ["btn btn-block btn-social btn-facebook"];
+                     a_href (Xml.uri_of_string ("https://www.facebook.com"))]
+   [i ~a:[a_class ["fa fa-facebook fa-lg"]] [pcdata " Sign in with Facebook"]
+   ] (* /a *)
+  ] (* /div *)
 
 
 (* Header Navbar html skeleton *)
@@ -70,7 +87,7 @@ let header_navbar_skeleton =
    [div ~a:[a_class ["navbar-header"]] [];
     div
     [ul ~a:[a_class ["nav navbar-nav navbar-right"]]
-     [li ~a:[a_class ["btn btn-block btn-social btn-facebook"]] [facebook_login]] (* /ul *)
+     [li [facebook_login_2]] (* /ul *)
     ] (* /div *)
    ] (* /div *)
   ] (* /div *)
@@ -157,14 +174,14 @@ let () =
         (Eliom_tools.F.html
            ~title:"Unsportsmanlike Conduct"
            ~css:[["css"; "UC.css"]]
-           ~other_head:[bootstrap_cdn_link]
+           ~other_head:[bootstrap_cdn_link; font_awesome_cdn_link]
            Html5.F.(
            body
            [header_navbar_skeleton;
             div ~a:[a_class ["container"; "margin_top_50px"; "padding_top_50px"]]
             [div ~a:[a_class ["jumbotron"]]
              [h1 [pcdata "Unsportsmanlike Conduct"]];
-              p [pcdata subtitle];
+              p [pcdata subtitle]
             ]; (* /div *)
             div ~a:[a_class ["row"]]
             [div ~a:[a_class ["col-md-3"]] [pcdata "welcome"]
