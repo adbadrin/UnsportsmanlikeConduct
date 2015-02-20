@@ -14,6 +14,12 @@ open Html5.D
 let facebook_app_id = "1432703690354746"
 
 
+(* Link to Facebook sign in with redirect *)
+let facebook_redirect_address = 
+  Xml.uri_of_string ("https://www.facebook.com/dialog/oauth?client_id=" ^ 
+                     facebook_app_id ^ "&redirect_uri=http://localhost:8080/gameplay")
+
+
 module UC_app =
   Eliom_registration.App (
     struct
@@ -56,26 +62,12 @@ let font_awesome_cdn_link =
   ()
 
 
-(* Login Button *)
-let login =
-  link_to 
-    ~address:"login" 
-    ~content:([Raw.span ~a:[a_class ["glyphicon glyphicon-log-in"]] [pcdata " Login with Facebook"]])
-
-
 (* facebook login button *)
-let facebook_login =
-  Html5.F.Raw.a 
-    ~a:[a_href (Xml.uri_of_string ("https://www.facebook.com/dialog/oauth?client_id=" ^ 
-                                   facebook_app_id ^ "&redirect_uri=http://localhost:8080/gameplay"))]
-      [pcdata "Login with Facebook"]
-
-let facebook_login_2 =
+let facebook_login_button =
   let open Html5.F in
-  div ~a:[a_class ["social-buttons"]]
-  [Raw.a ~a:[a_class ["btn btn-block btn-social btn-facebook"];
-                     a_href (Xml.uri_of_string ("https://www.facebook.com"))]
-   [i ~a:[a_class ["fa fa-facebook fa-lg"]] [pcdata " Sign in with Facebook"]
+  div ~a:[a_class ["btn-group"]]
+  [Raw.a ~a:[a_class ["btn btn-primary"]; a_href facebook_redirect_address]
+   [i ~a:[a_class ["fa fa-facebook"]] [pcdata "  | Sign in with Facebook"] (* /i *)
    ] (* /a *)
   ] (* /div *)
 
@@ -85,10 +77,10 @@ let header_navbar_skeleton =
   nav ~a:[a_class ["navbar navbar-inverse navbar-fixed-top"]]
   [div ~a:[a_class ["container-fluid"]]
    [div ~a:[a_class ["navbar-header"]] [];
-    div
-    [ul ~a:[a_class ["nav navbar-nav navbar-right"]]
-     [li [facebook_login_2]] (* /ul *)
-    ] (* /div *)
+    (*div*)
+    (*[*)ul ~a:[a_class ["nav navbar-nav navbar-right"; "fb_login"]]
+     [li [facebook_login_button]] (* /ul *)
+    (*]*) (* /div *)
    ] (* /div *)
   ] (* /div *)
 
@@ -165,6 +157,7 @@ let login_form_container =
    ] (* /div *)
   ] (* /div *)
 
+
 (* Register main_page_service *)
 let () =
   UC_app.register
@@ -199,7 +192,7 @@ let () =
         (Eliom_tools.F.html
           ~title:"Unsportsmanlike Conduct - Register"
           ~css:[["css"; "UC.css"]]
-          ~other_head:[bootstrap_cdn_link]
+          ~other_head:[bootstrap_cdn_link; font_awesome_cdn_link]
           Html5.F.(
           body
           [header_navbar_skeleton;
@@ -226,7 +219,7 @@ let gameplay =
         (Eliom_tools.F.html
           ~title:"Unsportsmanlike Conduct - Play Ball!"
           ~css:[["css"; "UC.css"]]
-          ~other_head:[bootstrap_cdn_link]
+          ~other_head:[bootstrap_cdn_link; font_awesome_cdn_link]
           Html5.F.(
            body
            [header_navbar_skeleton;
