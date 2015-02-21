@@ -518,3 +518,23 @@ Feb 19 20:31:11: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0
 Feb 19 20:31:13: main: ...Initialization of Ocsipersist-dbm complete
 Feb 19 20:31:13: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
 Feb 19 20:31:13: main: Ocsigen has been launched (initialisations ok)
+Feb 20 17:44:51: main: Initializing Ocsipersist-dbm...
+Feb 20 17:44:51: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Feb 20 17:44:53: main: ...Initialization of Ocsipersist-dbm complete
+Feb 20 17:44:53: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Feb 20 17:44:53: main: Ocsigen has been launched (initialisations ok)
+Feb 20 18:20:00: main: Initializing Ocsipersist-dbm...
+Feb 20 18:20:00: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Feb 20 18:20:01: main: ...Initialization of Ocsipersist-dbm complete
+Feb 20 18:20:01: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Feb 20 18:20:01: main: Ocsigen has been launched (initialisations ok)
+Feb 20 18:23:42: main: Initializing Ocsipersist-dbm...
+Feb 20 18:23:42: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Feb 20 18:23:44: main: ...Initialization of Ocsipersist-dbm complete
+Feb 20 18:23:44: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Feb 20 18:23:44: main: Ocsigen has been launched (initialisations ok)
+Feb 21 00:12:16: main: Initializing Ocsipersist-dbm...
+Feb 21 00:12:16: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Feb 21 00:12:17: main: ...Initialization of Ocsipersist-dbm complete
+Feb 21 00:12:18: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Feb 21 00:12:18: main: Ocsigen has been launched (initialisations ok)

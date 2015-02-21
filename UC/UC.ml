@@ -4,10 +4,15 @@
 (* NOTE: To use a .ml file insead of a .eliom file with a .eilom file removed from the directory *)
 (* modify Makefile.options to make sure that hte .ml file is in the SERVER_FILES array *)
 
+(* NOTE: Use Eliom_common.default_process_scope to ensure that each session is only available in one tab. Bad things could happen if the user could play the game in two tabs? *)
+
+(*#require "Facebook.ml";;*)
+
 open Eliom_lib
 open Eliom_content
 open Eliom_parameter
 open Html5.D
+(*open Facebook*)
 
 
 (* Facebook App Id for Unsportsmanlike Conduct *)
@@ -207,13 +212,17 @@ let () =
         )
     )
 
-
+(* TODO: Get eliom to recognize Facebook.ml and then use Facebook.verify_user to check that the *)
+(*       access_token and expires parameteres are being passed properly when verification both *)
+(*       passes and fails *)
 (* Register gameplay_service *)
 let gameplay =
   Eliom_registration.Html5.register_service
     ~path:["gameplay"]
     ~get_params:(string "code")
     (fun fb_code () ->
+      let access_token = "access_token" in
+      let expires = 1234321 in
       Lwt.return
         (*Html5.D.(html*)
         (Eliom_tools.F.html
@@ -225,7 +234,9 @@ let gameplay =
            [header_navbar_skeleton;
             div ~a:[a_class ["container"; "margin_top_50px"]]
             [div ~a:[a_class ["page-header"]]
-             [h1 [pcdata ("The code sent from facebook is: " ^ fb_code)]
+             [h1 [pcdata ("The code sent from facebook is: " ^ fb_code)];
+              h1 [pcdata ("The access token is: " ^ access_token)];
+              h1 [pcdata ("The time to expiration is: " ^ (string_of_int expires))]
              ] (* /div *)
             ] (* /div *)
            ] (* /body *)
