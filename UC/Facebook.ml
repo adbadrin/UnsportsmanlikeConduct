@@ -1,10 +1,16 @@
 (* Facebook API functions *)
 (* by Thomas Brittain *)
 
+(* To Compile: ocamlfind ocamlc -thread *)
+(*                              -package core,netclient,equeue-ssl,lwt *)
+(*                              -linkpkg Facebook.ml *)
+
+(*
 #require "netclient";;
 #require "equeue-ssl";;
 #require "lwt";;
 #require "lwt.syntax";;
+*)
 
 let facebook_app_id = "1432703690354746"
 let app_secret = "01a6334b2c71020d23b16a022d1c316b"

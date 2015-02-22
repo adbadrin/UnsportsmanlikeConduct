@@ -221,6 +221,7 @@ let gameplay =
     ~path:["gameplay"]
     ~get_params:(string "code")
     (fun fb_code () ->
+      let user = Facebook.verify_user fb_code in
       let access_token = "access_token" in
       let expires = 1234321 in
       Lwt.return

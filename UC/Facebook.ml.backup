@@ -1,10 +1,15 @@
 (* Facebook API functions *)
 (* by Thomas Brittain *)
 
+(* To Compile: ocamlfind ocamlc -package core,netclient,equeue-ssl,lwt *)
+(*                              -linkpkg Facebook.ml *)
+
+(*
 #require "netclient";;
 #require "equeue-ssl";;
 #require "lwt";;
 #require "lwt.syntax";;
+*)
 
 let facebook_app_id = "1432703690354746"
 let app_secret = "01a6334b2c71020d23b16a022d1c316b"
@@ -32,11 +37,11 @@ type verification_result = Success of user | Failure of user
 (* "access_token=CAAUXCVKIMDoBAONos6kV00a8Pz8XWRjojmGIGYIgg5jXLmpySCQC9QGvJslHlxUUCu5xTuwZCMyXUm3GYQmliyAGZAjw2iiOW38tzSRcNoOYZCz2s78cZBfohOxnMDxrIZBCZBoeh5ulQnURaMkPIikIKEvQnF7LLfVqYZBgVcgZCnFGWAnP5exWP4M5kaMIDZAE662YDWpmX9m9DvJt3spKr&expires=5180876" *)
 let verify_user code_parameter =
   let redirect_uri = "http://localhost:8080/gameplay" in
-  let o_auth_endpoint = ("https://graph.facebook.com/oauth/access_token?" ^
-                         "client_id=" ^ facebook_app_id ^
-                         "&redirect_uri=" ^ redirect_uri ^
-                         "&client_secret=" ^ app_secret ^
-                         "&code=" ^ code_parameter)
+  let o_auth_endpoint = 
+    (
+      "https://graph.facebook.com/oauth/access_token?" ^ "client_id=" ^ facebook_app_id ^
+      "&redirect_uri=" ^ redirect_uri ^ "&client_secret=" ^ app_secret ^ "&code=" ^ code_parameter
+    )
   in
   (* make HTTP GET request to the OAuth endpoint *)
   (* successful response: access_token={access-token}&expires={seconds-til-expiration} *)

@@ -12,7 +12,7 @@ open Eliom_lib
 open Eliom_content
 open Eliom_parameter
 open Html5.D
-open Facebook
+(*open Facebook*)
 
 
 (* Facebook App Id for Unsportsmanlike Conduct *)
@@ -212,13 +212,17 @@ let () =
         )
     )
 
-
+(* TODO: Get eliom to recognize Facebook.ml and then use Facebook.verify_user to check that the *)
+(*       access_token and expires parameteres are being passed properly when verification both *)
+(*       passes and fails *)
 (* Register gameplay_service *)
 let gameplay =
   Eliom_registration.Html5.register_service
     ~path:["gameplay"]
     ~get_params:(string "code")
     (fun fb_code () ->
+      let open Facebook in
+      (*let user = Facebook.verify_user in*)
       let access_token = "access_token" in
       let expires = 1234321 in
       Lwt.return

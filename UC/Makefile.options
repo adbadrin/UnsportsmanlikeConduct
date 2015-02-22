@@ -6,12 +6,12 @@
 PROJECT_NAME := UC
 
 # Source files for the server
-SERVER_FILES := $(wildcard *.eliomi *.eliom)
+SERVER_FILES := UC.ml Facebook.ml
 # Source files for the client
-CLIENT_FILES := $(wildcard *.eliomi *.eliom)
+CLIENT_FILES := UC.ml #$(wildcard *.eliomi *.eliom)
 
 # OCamlfind packages for the server
-SERVER_PACKAGES :=
+SERVER_PACKAGES := core equeue-ssl netclient lwt lwt.syntax
 # OCamlfind packages for the client
 CLIENT_PACKAGES :=
 
