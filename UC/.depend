@@ -1,6 +1,4 @@
 _server/UC.cmo : _server/Facebook.cmo
 _server/UC.cmx : _server/Facebook.cmx
-_client/UC.cmo : _client/Facebook.cmo
-_client/UC.cmx : _client/Facebook.cmx
-_client/Facebook.cmo :
-_client/Facebook.cmx :
+_server/Facebook.cmo :
+_server/Facebook.cmx :

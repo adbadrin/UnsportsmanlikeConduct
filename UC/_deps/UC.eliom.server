@@ -1,4 +1,0 @@
-_server/UC.cmo :
-_server/UC.cmx :
-_server/UC.cmo : _server/UC.type_mli
-_server/UC.cmx : _server/UC.type_mli

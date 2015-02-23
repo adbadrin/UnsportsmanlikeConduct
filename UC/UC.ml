@@ -212,6 +212,9 @@ let () =
         )
     )
 
+open Facebook
+
+(* TODO: Rewrite Facebook.ml using cohttp or functions from Ocisgenserver *)
 (* TODO: Get eliom to recognize Facebook.ml and then use Facebook.verify_user to check that the *)
 (*       access_token and expires parameteres are being passed properly when verification both *)
 (*       passes and fails *)
@@ -221,7 +224,11 @@ let gameplay =
     ~path:["gameplay"]
     ~get_params:(string "code")
     (fun fb_code () ->
-      let user = Facebook.verify_user fb_code in
+      let test_user = verify_user fb_code in
+      let test = match test_user with
+      | Success x -> ("Welcome " ^ x.first_name ^ " " ^ x.last_name ^ "!") (*"test passed"*)
+      | Failure x -> "you should not see this!"
+      in
       let access_token = "access_token" in
       let expires = 1234321 in
       Lwt.return
@@ -237,7 +244,8 @@ let gameplay =
             [div ~a:[a_class ["page-header"]]
              [h1 [pcdata ("The code sent from facebook is: " ^ fb_code)];
               h1 [pcdata ("The access token is: " ^ access_token)];
-              h1 [pcdata ("The time to expiration is: " ^ (string_of_int expires))]
+              h1 [pcdata ("The time to expiration is: " ^ (string_of_int expires))];
+              h1 [pcdata ("Testing Facebook module --- " ^ test)]
              ] (* /div *)
             ] (* /div *)
            ] (* /body *)

@@ -1,7 +1,8 @@
 (* Facebook API functions *)
 (* by Thomas Brittain *)
 
-(* To Compile: ocamlfind ocamlc -package core,netclient,equeue-ssl,lwt *)
+(* To Compile: ocamlfind ocamlc -thread *)
+(*                              -package core,netclient,equeue-ssl,lwt *)
 (*                              -linkpkg Facebook.ml *)
 
 (*
@@ -45,6 +46,8 @@ let verify_user code_parameter =
   in
   (* make HTTP GET request to the OAuth endpoint *)
   (* successful response: access_token={access-token}&expires={seconds-til-expiration} *)
+  (* TODO: re-write the below with cohttp *)
+  (*
   Ssl.init ()
   |> fun () ->
     (
@@ -70,6 +73,11 @@ let verify_user code_parameter =
                               expires = List.nth l 3 |> int_of_string}
       | (_, false) -> Failure {first_name = ""; last_name = ""; uc_username = "";
                                email_address = ""; access_token = ""; expires = 0}
+                               *)
+  Success {first_name = "Jimmy"; last_name = "Dean"; uc_username = "JimmyDeanSausage";
+           email_address = "jimmydea@jimmydeansausage.com"; access_token = "69";
+           expires = 69}
+
 
 
 (* Check if the user is logged into facebook *)
