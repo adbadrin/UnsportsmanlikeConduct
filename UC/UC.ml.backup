@@ -1,106 +1,21 @@
 (* test by running "make test.byte" in the directory containing this file*)
 (* the test on local host at "http://localhost:8080" *)
 
-(* NOTE: To use a .ml file insead of a .eliom file with a .eilom file removed from the directory *)
-(* modify Makefile.options to make sure that hte .ml file is in the SERVER_FILES array *)
-
 (* NOTE: Use Eliom_common.default_process_scope to ensure that each session is only available in one tab. Bad things could happen if the user could play the game in two tabs? *)
+
+(* TODO: Populate user_info with all information *)
+(* TODO: Replace all Facebook functions with calls to the same functions in Facebook.ml *)
 
 open Eliom_lib
 open Eliom_content
 open Eliom_parameter
 open Html5.D
 
-let facebook_app_id = "1432703690354746"
-let app_secret = "01a6334b2c71020d23b16a022d1c316b"
-
-(* User type *)
-type user = {first_name : string option; last_name : string option; uc_username : string option;
-             email_address : string option; access_token : string option; expires : int option}
-
-(* Facebook user verification type *)
-type verification_result = Success of user | Failure of user
-
-(* Handmade Core.Core_string.split_on_chars b/c core breaks in Ocsigen *)
-let split_string_on in_string ~on =
-  (* Split the string into a list of its individual characters, as strings not characters *)
-  let list_of_string s =
-    let rec build_string_list in_string out_string_list =
-      match String.length in_string with
-      | 0 -> List.rev out_string_list
-      | _ -> build_string_list (String.sub in_string 1 ((String.length in_string) -1))
-                               ((String.sub in_string 0 1) :: out_string_list)
-    in
-    build_string_list s []
-  in
-  (* Then concatenate and split into another list based on the chars chosen *)
-  let build_final_string_list sl ~split_on =
-    let rec f curr_string curr_list remaining =
-      match List.length remaining with
-      | 0 -> List.rev (if curr_string = "" then curr_list else (curr_string :: curr_list))
-      | _ -> if List.mem (List.hd remaining) split_on
-             then f "" (curr_string :: curr_list) (List.tl remaining)
-             else f (curr_string ^ (List.hd remaining)) curr_list (List.tl remaining)
-    in
-    f "" [] sl
-  in
-  build_final_string_list (list_of_string in_string) ~split_on:on
-
-
-
-(* Verify a Facebook user *)
-(* TODO: Remove the use of core from this function. It seems to be causing problems. *)
-(* Error: '-type-conv' option disabled but some packages require the type_conv syntax to be loaded. *)
-(* verify_user : string -> verification_result Lwt.t *)
-let verify_user code_parameter =
-  let redirect_uri = "http://localhost:8080/gameplay" in
-  let o_auth_endpoint =
-    Uri.of_string
-     (
-       "https://graph.facebook.com/oauth/access_token?" ^ "client_id=" ^ facebook_app_id ^
-       "&redirect_uri=" ^ redirect_uri ^ "&client_secret=" ^ app_secret ^ "&code=" ^ code_parameter
-     )
-   in
-   (* Uri.t -> (Response.t * Cohttp_lwt_body.t) Lwt.t *)
-   Cohttp_lwt_unix.Client.get o_auth_endpoint
-   (* (Response.t * Cohttp_lwt_body.t) -> string Cohttp_lwt_unix_net.io Lwt.t *)
-   >>= fun (a, b) -> b |> Cohttp_lwt_body.to_string
-   >>= fun s -> split_string_on s ~on:["="; "&"] |> Lwt.return
-   >>= fun l ->
-     match (l, List.mem "access_token" l) with
-     | (l, true) -> Success {first_name = None; last_name = None; uc_username = None;
-                             email_address = None; access_token = Some (List.nth l 1);
-                             expires = Some (List.nth l 3 |> int_of_string)}
-                    |> Lwt.return
-     | (_, false) -> Failure {first_name = None; last_name = None; uc_username = None;
-                              email_address = None; access_token = None; expires = None}
-                     |> Lwt.return
-
-
-(* TEST - Delete this later *)
-let dummy_verify () =
-  Success {first_name = Some "Jimmy"; last_name = Some "Dean"; uc_username = Some "JimmyDeanSausage";
-           email_address = Some "jimmydean@jimmydeansausage.com"; access_token = Some "69";
-           expires = Some 69}
-
-(* Refs for user session data - initialize with all fields = None *)
-let user_info =
-  Eliom_reference.eref ~scope:Eliom_common.default_process_scope
-                       ~secure:true
-                       (
-                         Failure {first_name = None; last_name = None; uc_username = None;
-                                  email_address = None; access_token = None; expires = None}
-                       )
-
-
-(* Facebook App Id for Unsportsmanlike Conduct *)
-let facebook_app_id = "1432703690354746"
-
 
 (* Link to Facebook sign in with redirect *)
 let facebook_redirect_address = 
   Xml.uri_of_string ("https://www.facebook.com/dialog/oauth?client_id=" ^ 
-                     facebook_app_id ^ "&redirect_uri=http://localhost:8080/gameplay")
+                     Facebook.facebook_app_id ^ "&redirect_uri=http://localhost:8080/gameplay")
 
 
 module UC_app =
@@ -310,30 +225,27 @@ let gameplay =
         | Some x -> string_of_int x
         | None -> "Empty_String_of_Int"
       in
-      let test = match dummy_verify () with
-      | Success x -> ("Welcome " ^ (f x.first_name) ^ " " ^ (f x.last_name) ^ "!") (*"test passed"*)
-      | Failure x -> "you should not see this!"
-      in
-      let access_token = "access_token" in
-      let expires = 1234321 in
       (* eref -> string Lwt.t *)
       let get_test_ref user_ref =
         Eliom_reference.get user_ref 
-        >>= fun vr ->
-              match vr with
-              | Success x -> ("Welcome " ^ (f x.first_name) ^ " " ^ (f x.last_name) ^ "!" ^
-                              "\nYour access token is " ^ (f x.access_token) ^
-                              " and your expires = " ^ (f x.expires) ^ "!")
+        >>= fun user ->
+          let open Facebook in
+              match user.verified with
+              | Some true -> ("Welcome " ^ (f user.first_name) ^ " " ^ (f user.last_name) ^ "!" ^
+                              "\nYour access token is " ^ (f user.access_token) ^
+                              " and your expires = " ^ (g user.expires) ^ "!")
                              |> Lwt.return
-              | Failure x -> "FAIL!" |> Lwt.return
+              | _ -> "FAIL!" |> Lwt.return
       in
       (* Kick off the thread *)
-      (* string -> verification_result Lwt.t *)
-      verify_user fb_code
-      (* verification_result -> eref -> unit Lwt.t *)
-      >>= fun u -> Eliom_reference.set user_info u (* Set the user_info *)
+      (* string -> user Lwt.t *)
+      Facebook.verify_user fb_code
+      (* user -> eref -> unit Lwt.t *) (* Set user_info *)
+      >>= fun u -> Eliom_reference.set Facebook.user_info u
+      (* unit -> unit Lwt.t *) (* Update user_info *)
+      >>=  fun () -> Facebook.update_user_info
       (* unit -> eref -> string Lwt.t *)
-      >>= fun () -> get_test_ref user_info
+      >>= fun () -> get_test_ref Facebook.user_info
       (* string -> html_stuff Lwt.t *)
       >>= fun test_string ->
       Lwt.return
@@ -348,9 +260,6 @@ let gameplay =
             div ~a:[a_class ["container"; "margin_top_50px"]]
             [div ~a:[a_class ["page-header"]]
              [h1 [pcdata ("The code sent from facebook is: " ^ fb_code)];
-              h1 [pcdata ("The access token is: " ^ access_token)];
-              h1 [pcdata ("The time to expiration is: " ^ (string_of_int expires))];
-              h1 [pcdata ("Testing dummy_verify --- " ^ test)];
               h1 [pcdata ("Testing Facebook.verify_user_2 --- " ^ test_string)]
              ] (* /div *)
             ] (* /div *)
