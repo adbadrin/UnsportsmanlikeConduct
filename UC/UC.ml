@@ -6,10 +6,18 @@
 (* TODO: Populate user_info with all information *)
 (* TODO: Replace all Facebook functions with calls to the same functions in Facebook.ml *)
 
+(* NOTE: All functions outside of services are designed to take a user, not a user Lwt.t *)
+
 open Eliom_lib
 open Eliom_content
 open Eliom_parameter
 open Html5.D
+
+(* Get string from string option *)
+let string_of_option so =
+  match so with
+  | Some s -> s
+  | None -> ""
 
 
 (* Link to Facebook sign in with redirect *)
@@ -26,8 +34,10 @@ module UC_app =
 
 
 (* Main page service *)
+(*
 let main_page_service =
   Eliom_service.App.service ~path:["main"] ~get_params:Eliom_parameter.unit ()
+  *)
 
 
 (* Login page service *)
@@ -71,16 +81,36 @@ let facebook_login_button =
 
 
 (* Header Navbar html skeleton *)
-let header_navbar_skeleton =
+(* unit -> html_stuff Lwt.t *)
+(* TODO: get the name in the top right corner to show up as white *)
+let header_navbar_skeleton (u : Facebook.user) =
+  let open Facebook in
+  let login_button_or_welcome =
+      match u.verified with
+      | Some true ->
+          (li
+           [h2 [pcdata ((string_of_option u.first_name) ^ " " ^ (string_of_option u.last_name))]
+           ] (* /li *)
+          )
+      | _ -> (li [facebook_login_button])
+  in
   nav ~a:[a_class ["navbar navbar-inverse navbar-fixed-top"]]
   [div ~a:[a_class ["container-fluid"]]
    [div ~a:[a_class ["navbar-header"]] [];
-    (*div*)
-    (*[*)ul ~a:[a_class ["nav navbar-nav navbar-right"; "fb_login"]]
-     [li [facebook_login_button]] (* /ul *)
-    (*]*) (* /div *)
+    ul ~a:[a_class ["nav navbar-nav navbar-right"; "fb_login"]]
+    [login_button_or_welcome
+    ] (* /ul *)
    ] (* /div *)
   ] (* /div *)
+
+
+(* Welcome message - displayed when user first logs in and is verified *)
+let welcome_message (u : Facebook.user) =
+  let open Facebook in
+  match u.verified with
+  | Some true -> ("Welcome " ^ (string_of_option u.first_name) ^ " " ^
+                  (string_of_option u.last_name) ^ "!")
+  | _ -> "You are not logged in or have not been verified!"
 
 
 (* Footer Navbar html skeleton *)
@@ -157,10 +187,14 @@ let login_form_container =
 
 
 (* Register main_page_service *)
-let () =
-  UC_app.register
-    ~service:main_page_service
+let main =
+  Eliom_registration.Html5.register_service
+    ~path:["main"]
+    ~get_params:unit
     (fun () () ->
+      (* Kick off the thread *)
+      Eliom_reference.get Facebook.user_info
+      >>= fun user ->
       Lwt.return
         (Eliom_tools.F.html
            ~title:"Unsportsmanlike Conduct"
@@ -168,7 +202,7 @@ let () =
            ~other_head:[bootstrap_cdn_link; font_awesome_cdn_link]
            Html5.F.(
            body
-           [header_navbar_skeleton;
+           [header_navbar_skeleton user;
             div ~a:[a_class ["container"; "margin_top_50px"; "padding_top_50px"]]
             [div ~a:[a_class ["jumbotron"]]
              [h1 [pcdata "Unsportsmanlike Conduct"]];
@@ -193,7 +227,7 @@ let () =
           ~other_head:[bootstrap_cdn_link; font_awesome_cdn_link]
           Html5.F.(
           body
-          [header_navbar_skeleton;
+          [(*header_navbar_skeleton;*)
            div ~a:[a_class ["container"; "margin_top_50px"]]
            [div ~a:[a_class ["page-header"]]
             [h1 [pcdata "Login"]
@@ -215,39 +249,16 @@ let gameplay =
     ~path:["gameplay"]
     ~get_params:(string "code")
     (fun fb_code () ->
-      let f x =
-        match x with
-        | Some x -> x
-        | None -> "Empty_String"
-      in
-      let g x =
-        match x with
-        | Some x -> string_of_int x
-        | None -> "Empty_String_of_Int"
-      in
-      (* eref -> string Lwt.t *)
-      let get_test_ref user_ref =
-        Eliom_reference.get user_ref 
-        >>= fun user ->
-          let open Facebook in
-              match user.verified with
-              | Some true -> ("Welcome " ^ (f user.first_name) ^ " " ^ (f user.last_name) ^ "!" ^
-                              "\nYour access token is " ^ (f user.access_token) ^
-                              " and your expires = " ^ (g user.expires) ^ "!")
-                             |> Lwt.return
-              | _ -> "FAIL!" |> Lwt.return
-      in
-      (* Kick off the thread *)
-      (* string -> user Lwt.t *)
+      (* string -> user Lwt.t *) (* Kick off the thread *)
       Facebook.verify_user fb_code
       (* user -> eref -> unit Lwt.t *) (* Set user_info *)
       >>= fun u -> Eliom_reference.set Facebook.user_info u
       (* unit -> unit Lwt.t *) (* Update user_info *)
-      >>=  fun () -> Facebook.update_user_info ()
-      (* unit -> eref -> string Lwt.t *)
-      >>= fun () -> get_test_ref Facebook.user_info
-      (* string -> html_stuff Lwt.t *)
-      >>= fun test_string ->
+      >>= fun () -> Facebook.update_user_info ()
+      (* unit -> Facebook.user Lwt.t *)
+      >>= fun () -> Eliom_reference.get Facebook.user_info
+      (* Facebook.user -> html_stuff Lwt.t *)
+      >>= fun user ->
       Lwt.return
         (*Html5.D.(html*)
         (Eliom_tools.F.html
@@ -256,11 +267,10 @@ let gameplay =
           ~other_head:[bootstrap_cdn_link; font_awesome_cdn_link]
           Html5.F.(
            body
-           [header_navbar_skeleton;
+           [header_navbar_skeleton user;
             div ~a:[a_class ["container"; "margin_top_50px"]]
             [div ~a:[a_class ["page-header"]]
-             [h1 [pcdata ("The code sent from facebook is: " ^ fb_code)];
-              h1 [pcdata ("Testing Facebook.verify_user_2 --- " ^ test_string)]
+             [h1 [pcdata (welcome_message user)]
              ] (* /div *)
             ] (* /div *)
            ] (* /body *)
