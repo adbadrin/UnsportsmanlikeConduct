@@ -6,12 +6,12 @@
 PROJECT_NAME := UC
 
 # Source files for the server
-SERVER_FILES := UC.ml Facebook.ml
+SERVER_FILES := UC.ml
 # Source files for the client
 CLIENT_FILES :=
 
 # OCamlfind packages for the server
-SERVER_PACKAGES :=
+SERVER_PACKAGES := uri cohttp.lwt
 # OCamlfind packages for the client
 CLIENT_PACKAGES :=
 

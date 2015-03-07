@@ -1,0 +1,4 @@
+Mar  1 18:50:01: main: Fatal - While loading /home/alpha/.opam/4.01.0/lib/conduit/conduit-lwt.cmxs: error loading shared library: /home/alpha/.opam/4.01.0/lib/conduit/conduit-lwt.cmxs: undefined symbol: camlResolver__fun_1796
+Mar  1 22:07:58: main: Fatal - While loading /home/alpha/.opam/4.01.0/lib/conduit/conduit-lwt.cmxs: error loading shared library: /home/alpha/.opam/4.01.0/lib/conduit/conduit-lwt.cmxs: undefined symbol: camlResolver__fun_1796
+Mar  6 18:33:41: main: Fatal - Error in configuration file: Error while parsing configuration file: Eliom: while loading local/lib/UC/UC.cma: error while linking local/lib/UC/UC.cma.
+Mar  6 18:33:41: main: Reference to undefined global `Cohttp_lwt_body'

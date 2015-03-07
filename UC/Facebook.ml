@@ -8,8 +8,12 @@
 (*
 #require "netclient";;
 #require "equeue-ssl";;
+#require "uri";;
 #require "lwt";;
 #require "lwt.syntax";;
+
+#require "uri";;
+#require "cohttp.lwt";;
 *)
 
 let facebook_app_id = "1432703690354746"
@@ -26,58 +30,36 @@ type user = {first_name : string; last_name : string; uc_username : string;
 (* Success of (access_token, seconds to timeout) *)
 type verification_result = Success of user | Failure of user
 
-(* after you get the code parameter from the facebook redirect: *)
-(* (1) verify the user by exchaniging the code for an access token using an endpoint *)
+let dummy_verify () = 
+    Success {first_name = "Jimmy"; last_name = "Dean"; uc_username = "JimmyDeanSausage";
+             email_address = "jimmydea@jimmydeansausage.com"; access_token = "69";
+             expires = 69}
 
-(* Verify the user - Returns Success of access_token or Failure of msg *)
-(* exchange the code parameter from the facebook redirect for an access token using an endpoint *)
-(* Error message example: *)
-(* "{\"error\":{\"message\":\"This authorization code has been used.\", *)
-(*   \"type\":\"OAuthException\",\"code\":100}}" *)
-(* Success message example: *)
-(* "access_token=CAAUXCVKIMDoBAONos6kV00a8Pz8XWRjojmGIGYIgg5jXLmpySCQC9QGvJslHlxUUCu5xTuwZCMyXUm3GYQmliyAGZAjw2iiOW38tzSRcNoOYZCz2s78cZBfohOxnMDxrIZBCZBoeh5ulQnURaMkPIikIKEvQnF7LLfVqYZBgVcgZCnFGWAnP5exWP4M5kaMIDZAE662YDWpmX9m9DvJt3spKr&expires=5180876" *)
-let verify_user code_parameter =
+
+(* Cohttp version *)
+let verify_user_2 code_parameter =
   let redirect_uri = "http://localhost:8080/gameplay" in
   let o_auth_endpoint = 
+    Uri.of_string
     (
       "https://graph.facebook.com/oauth/access_token?" ^ "client_id=" ^ facebook_app_id ^
       "&redirect_uri=" ^ redirect_uri ^ "&client_secret=" ^ app_secret ^ "&code=" ^ code_parameter
     )
   in
-  (* make HTTP GET request to the OAuth endpoint *)
-  (* successful response: access_token={access-token}&expires={seconds-til-expiration} *)
-  (* TODO: re-write the below with cohttp *)
-  (*
-  Ssl.init ()
-  |> fun () ->
-    (
-      let ctx = Ssl.create_context Ssl.TLSv1 Ssl.Client_context in
-      let tct = Https_client.https_transport_channel_type ctx in
-      let pipe_ssl = new Http_client.pipeline in
-      pipe_ssl#configure_transport Http_client.https_cb_id tct
-      |> fun () -> 
-          (
-            let request = new Http_client.get o_auth_endpoint in
-            pipe_ssl#add request
-            |> pipe_ssl#run
-            |> fun () -> request#response_body#value
-          )
-    )
-  |> fun s -> Core.Core_string.split_on_chars s ~on:['='; '&']
-               (* access token if it exists, bool *)
-  |> fun l -> (l, List.mem "access_token" l)
-  |> fun (l, b) ->
-      match (l, b) with
-      | (l, true) -> Success {first_name = ""; last_name = ""; uc_username = "";
-                              email_address = ""; access_token = List.nth l 1;
-                              expires = List.nth l 3 |> int_of_string}
-      | (_, false) -> Failure {first_name = ""; last_name = ""; uc_username = "";
-                               email_address = ""; access_token = ""; expires = 0}
-                               *)
-  Success {first_name = "Jimmy"; last_name = "Dean"; uc_username = "JimmyDeanSausage";
-           email_address = "jimmydea@jimmydeansausage.com"; access_token = "69";
-           expires = 69}
-
+  (* Uri.t -> (Response.t * Cohttp_lwt_body.t) Lwt.t *)
+  Cohttp_lwt_unix.Client.get o_auth_endpoint
+  (* (Response.t * Cohttp_lwt_body.t) -> string Cohttp_lwt_unix_net.io Lwt.t *)
+  >>= fun (a, b) -> b |> Cohttp_lwt_body.to_string
+  >>= fun s -> Core.Core_string.split_on_chars s ~on:['='; '&'] |> Lwt.return
+  >>= fun l ->
+    match (l, List.mem "access_token" l) with
+    | (l, true) -> Success {first_name = ""; last_name = ""; uc_username = "";
+                            email_address = ""; access_token = List.nth l 1;
+                            expires = List.nth l 3 |> int_of_string}
+                   |> Lwt.return
+    | (_, false) -> Failure {first_name = ""; last_name = ""; uc_username = "";
+                             email_address = ""; access_token = ""; expires = 0}
+                    |> Lwt.return
 
 
 (* Check if the user is logged into facebook *)
