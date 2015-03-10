@@ -20,16 +20,53 @@ type user = {first_name : string option;
              verified : bool option}
 
 
+(* Permissions type - true = granted, false = not granted*)
+type permissions = {public_profile : bool option;
+                    photo : string option;
+                    user_photos : bool option;
+                    friendlist_id: string option}
+
+
 (* Default verification_result to seed the user_info ref *)
 let initial_user_info = {first_name = None; last_name = None; uc_username = None;
                          email_address = None; access_token = None; expires = None; verified = None}
 
 
-(* Refs for user session data - initialize with all fields = None *)
+(* Default permissions to seed the user_permissions ref *)
+let initial_permissions = {public_profile = None; photo = None; user_photos = None;
+                           friendlist_id = None}
+
+
+(* Refs for user session data *)
 let user_info =
   Eliom_reference.eref ~scope:Eliom_common.default_process_scope
                        ~secure:true
                        initial_user_info
+
+
+let user_permissions =
+  Eliom_reference.eref ~scope:Eliom_common.default_process_scope
+                       ~secure:true
+                       initial_permissions
+
+
+(* Functions to update Eliom ref fields - this seems sloppy, there must be a better way to do this *)
+
+(* update_public_profile : bool option -> unit Lwt.t *)
+let update_public_profile x =
+  Eliom_reference.get user_permissions
+  >>= fun up ->
+    Eliom_reference.set user_permissions
+                        {public_profile = x; photo = up.photo; user_photos = up.user_photos;
+                         friendlist_id = up.friendlist_id}
+
+let update_public_profile x =
+  Eliom_reference.get user_permissions
+  >>= fun up ->
+    Eliom_reference.set user_permissions
+                        {public_profile = x; photo = up.photo; user_photos = up.user_photos;
+                         friendlist_id = up.friendlist_id}
+
 
 
 
@@ -59,7 +96,7 @@ let split_string_on in_string ~on =
   build_final_string_list (list_of_string in_string) ~split_on:on
 
 
-(* Verify a Facebook user *)
+(* Verify a Facebook user and update access_token, expires & verified fields*)
 (* verify_user : string -> user Lwt.t *)
 let verify_user code_parameter =
   let redirect_uri = "http://localhost:8080/gameplay" in
@@ -110,4 +147,31 @@ let update_user_info () =
                              access_token = u.access_token;
                              expires = u.expires; verified = u.verified}
       >>= fun _ -> Lwt.return ()
+  | None -> Lwt.return ()
+
+
+(* Update the users permissions *)
+let update_user_permissions () =
+  Eliom_reference.get user_info
+  >>= fun u -> match u.access_token with
+  | Some acc_tkn ->
+      let perm_uri =
+        Uri.of_string ("https://graph.facebook.com/me/permissions?access_token=" ^ acc_tkn)
+      in
+      let open Yojson.Basic.Util in
+      Cohttp_lwt_unix.Client.get perm_uri
+      >>= fun (a, b) -> b |> Cohttp_lwt_body.to_string
+      >>= fun s -> Yojson.Basic.from_string s |> Lwt.return
+      >>= fun json -> member "data" json |> index 0 |> Lwt.return
+      >>= fun json ->
+        (* TODO: add the rest of the necessary permissions *)
+        let pub_prof_perm =
+          try 
+            if (json |> member "permission" |> to_string) = "public_profile" 
+            && (json |> member "status" |> to_string) = "granted"
+            then Some true else None
+          with _ ->
+            None
+        in
+        update_public_profile pub_prof_perm
   | None -> Lwt.return ()

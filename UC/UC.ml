@@ -270,7 +270,8 @@ let gameplay =
            [header_navbar_skeleton user;
             div ~a:[a_class ["container"; "margin_top_50px"]]
             [div ~a:[a_class ["page-header"]]
-             [h1 [pcdata (welcome_message user)]
+             [h1 [pcdata (welcome_message user)];
+              h1 [pcdata ("access_token = " ^ (string_of_option user.access_token))]
              ] (* /div *)
             ] (* /div *)
            ] (* /body *)
