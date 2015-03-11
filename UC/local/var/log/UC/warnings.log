@@ -431,3 +431,73 @@ Mar  9 21:12:46: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0
 Mar  9 21:12:47: main: ...Initialization of Ocsipersist-dbm complete
 Mar  9 21:12:47: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
 Mar  9 21:12:47: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:02:19: main: Initializing Ocsipersist-dbm...
+Mar 10 21:02:19: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:02:20: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:02:20: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:02:20: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:05:33: main: Initializing Ocsipersist-dbm...
+Mar 10 21:05:33: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:05:34: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:05:34: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:05:34: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:06:16: main: Initializing Ocsipersist-dbm...
+Mar 10 21:06:16: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:06:17: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:06:17: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:06:17: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:13:15: main: Initializing Ocsipersist-dbm...
+Mar 10 21:13:15: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:13:16: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:13:16: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:13:16: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:24:20: main: Initializing Ocsipersist-dbm...
+Mar 10 21:24:20: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:24:21: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:24:21: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:24:21: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:26:20: main: Initializing Ocsipersist-dbm...
+Mar 10 21:26:20: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:26:21: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:26:21: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:26:21: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:29:41: main: Initializing Ocsipersist-dbm...
+Mar 10 21:29:41: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:29:42: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:29:42: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:29:42: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:33:45: main: Initializing Ocsipersist-dbm...
+Mar 10 21:33:45: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:33:46: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:33:46: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:33:46: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:35:00: main: Initializing Ocsipersist-dbm...
+Mar 10 21:35:00: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:35:01: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:35:01: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:35:01: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:35:50: main: Initializing Ocsipersist-dbm...
+Mar 10 21:35:50: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:35:51: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:35:52: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:35:52: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:36:56: main: Initializing Ocsipersist-dbm...
+Mar 10 21:36:56: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:36:57: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:36:57: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:36:57: main: Ocsigen has been launched (initialisations ok)
+Mar 10 21:58:29: main: Initializing Ocsipersist-dbm...
+Mar 10 21:58:29: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 21:58:30: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 21:58:30: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 21:58:30: main: Ocsigen has been launched (initialisations ok)
+Mar 10 22:00:27: main: Initializing Ocsipersist-dbm...
+Mar 10 22:00:27: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 22:00:28: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 22:00:28: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 22:00:28: main: Ocsigen has been launched (initialisations ok)
+Mar 10 22:00:45: main: Initializing Ocsipersist-dbm...
+Mar 10 22:00:45: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 10 22:00:46: main: ...Initialization of Ocsipersist-dbm complete
+Mar 10 22:00:46: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
+Mar 10 22:00:46: main: Ocsigen has been launched (initialisations ok)

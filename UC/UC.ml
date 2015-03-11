@@ -5,6 +5,7 @@
 
 (* TODO: Populate user_info with all information *)
 (* TODO: Replace all Facebook functions with calls to the same functions in Facebook.ml *)
+(* TODO: Add user photo to header_navbar_skeleton *)
 
 (* NOTE: All functions outside of services are designed to take a user, not a user Lwt.t *)
 
@@ -21,9 +22,11 @@ let string_of_option so =
 
 
 (* Link to Facebook sign in with redirect *)
+(* TODO: Request permissions for public_profile, user_friends, picture *)
 let facebook_redirect_address = 
   Xml.uri_of_string ("https://www.facebook.com/dialog/oauth?client_id=" ^ 
-                     Facebook.facebook_app_id ^ "&redirect_uri=http://localhost:8080/gameplay")
+                     Facebook.facebook_app_id ^ "&redirect_uri=http://localhost:8080/gameplay" ^
+                     "&scope=public_profile"(*user_photos,user_friends,publish_actions*))
 
 
 module UC_app =
@@ -33,23 +36,10 @@ module UC_app =
     end)
 
 
-(* Main page service *)
-(*
-let main_page_service =
-  Eliom_service.App.service ~path:["main"] ~get_params:Eliom_parameter.unit ()
-  *)
-
-
 (* Login page service *)
 let login_page_service =
   Eliom_service.App.service ~path:["login"] ~get_params:Eliom_parameter.unit ()
 
-
-(* Gameplay page service *)
-(*
-let gameplay_page_service =
-  Eliom_service.App.service ~path:["gameplay"] ~get_params:(string "code")
-*)
 
 (* create a link *)
 let link_to ~address ~content =
@@ -255,6 +245,8 @@ let gameplay =
       >>= fun u -> Eliom_reference.set Facebook.user_info u
       (* unit -> unit Lwt.t *) (* Update user_info *)
       >>= fun () -> Facebook.update_user_info ()
+      (* unit -> unit Lwt.t *) (* Update the users photo *)
+      >>= fun () -> Facebook.update_profile_photo ()
       (* unit -> Facebook.user Lwt.t *)
       >>= fun () -> Eliom_reference.get Facebook.user_info
       (* Facebook.user -> html_stuff Lwt.t *)

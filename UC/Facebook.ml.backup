@@ -60,15 +60,6 @@ let update_public_profile x =
                         {public_profile = x; photo = up.photo; user_photos = up.user_photos;
                          friendlist_id = up.friendlist_id}
 
-let update_public_profile x =
-  Eliom_reference.get user_permissions
-  >>= fun up ->
-    Eliom_reference.set user_permissions
-                        {public_profile = x; photo = up.photo; user_photos = up.user_photos;
-                         friendlist_id = up.friendlist_id}
-
-
-
 
 (* Handmade Core.Core_string.split_on_chars b/c core breaks in Ocsigen *)
 let split_string_on in_string ~on =
@@ -149,6 +140,35 @@ let update_user_info () =
       >>= fun _ -> Lwt.return ()
   | None -> Lwt.return ()
 
+
+(* Update the user photo in the permissions *)
+(* update_profile_photo : unit -> unit Lwt.t *)
+let update_profile_photo () =
+  let update_photo new_photo =
+    Eliom_reference.get user_permissions
+    >>= fun up ->
+      Eliom_reference.set user_permissions
+                          {public_profile = up.public_profile; photo = Some new_photo;
+                           user_photos = up.user_photos; friendlist_id = up.friendlist_id}
+  in
+  Eliom_reference.get user_info
+  >>= fun u -> match u.access_token with
+  | Some acc_tkn ->
+      let photo_uri =
+        Uri.of_string ("https://graph.facebook.com/me/picture?redirect=false&access_token=" ^ at)
+      in
+      let open Yojson.Basic.Util in
+      Cohttp_lwt_unix.Client.get photo_uri
+      >>= fun (a, b) -> b |> Cohttp_lwt_body.to_string
+      >>= fun s -> Yojson.Basic.from_string s |> Lwt.return
+      >>= fun json ->
+        let photo_string =
+          try
+            member "data" json |> member "url" |> to_string
+          with _ -> ""
+        in
+        update_photo photo_string
+  | None -> Lwt.return ()
 
 (* Update the users permissions *)
 let update_user_permissions () =
