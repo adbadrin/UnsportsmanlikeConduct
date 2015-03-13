@@ -2,6 +2,14 @@
     font-family: Arial Black;
 }
 
+html {
+  background: url(football-grass.jpg) no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+}
+
 .margin_top_50px {
   margin-top: 50px
 }
