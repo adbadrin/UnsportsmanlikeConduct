@@ -14,3 +14,15 @@
   padding-top: 0.5em;
 	padding-right: 0.5em
 }
+
+.user_name_and_photo {
+  padding-bottom: 0.5em
+}
+
+.user_name {
+  color: white;
+  font-size: large;
+	float: left;
+	padding-right: 1em;
+	padding-top: 0.6em;
+}

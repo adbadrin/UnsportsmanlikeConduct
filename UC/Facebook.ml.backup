@@ -15,6 +15,7 @@ type user = {first_name : string option;
              last_name : string option;
              uc_username : string option;
              email_address : string option;
+             profile_photo : string option;
              access_token : string option;
              expires : int option;
              verified : bool option}
@@ -29,7 +30,8 @@ type permissions = {public_profile : bool option;
 
 (* Default verification_result to seed the user_info ref *)
 let initial_user_info = {first_name = None; last_name = None; uc_username = None;
-                         email_address = None; access_token = None; expires = None; verified = None}
+                         email_address = None; profile_photo = None; access_token = None;
+                         expires = None; verified = None}
 
 
 (* Default permissions to seed the user_permissions ref *)
@@ -106,12 +108,12 @@ let verify_user code_parameter =
    >>= fun l ->
      match (l, List.mem "access_token" l) with
      | (l, true) -> {first_name = None; last_name = None; uc_username = None;
-                     email_address = None; access_token = Some (List.nth l 1);
+                     email_address = None; profile_photo = None; access_token = Some (List.nth l 1);
                      expires = Some (List.nth l 3 |> int_of_string); verified = Some true}
                     |> Lwt.return
      | (_, false) -> {first_name = None; last_name = None; uc_username = None;
-                      email_address = None; access_token = None; expires = None;
-                      verified = Some false}
+                      email_address = None; profile_photo = None; access_token = None;
+                      expires = None; verified = Some false}
                     |> Lwt.return
 
 
@@ -135,6 +137,7 @@ let update_user_info () =
                             {first_name = Some fn; last_name = Some ln;
                              uc_username = u.uc_username;
                              email_address = u.email_address;
+                             profile_photo = u.profile_photo;
                              access_token = u.access_token;
                              expires = u.expires; verified = u.verified}
       >>= fun _ -> Lwt.return ()
@@ -150,12 +153,19 @@ let update_profile_photo () =
       Eliom_reference.set user_permissions
                           {public_profile = up.public_profile; photo = Some new_photo;
                            user_photos = up.user_photos; friendlist_id = up.friendlist_id}
+    >>= fun () -> Elioim_reference.get user_info
+    >>= fun u ->
+      Eliom_reference.set user_info
+                          {first_name = u.first_name; last_name = u.last_name;
+                           uc_username = u.uc_username; email_address = u.email_address;
+                           profile_photo = Some new_photo; access_token = u.access_token;
+                           expires = u.expires; verified = u.verified}
   in
   Eliom_reference.get user_info
   >>= fun u -> match u.access_token with
   | Some acc_tkn ->
       let photo_uri =
-        Uri.of_string ("https://graph.facebook.com/me/picture?redirect=false&access_token=" ^ at)
+        Uri.of_string ("https://graph.facebook.com/me/picture?redirect=false&access_token=" ^ acc_tkn)
       in
       let open Yojson.Basic.Util in
       Cohttp_lwt_unix.Client.get photo_uri

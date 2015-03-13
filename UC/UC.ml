@@ -60,6 +60,11 @@ let font_awesome_cdn_link =
   ()
 
 
+(* Create an image from an external link *)
+let ext_img image_link description =
+  img ~alt:description ~src:(Xml.uri_of_string image_link) ()
+
+
 (* facebook login button *)
 let facebook_login_button =
   let open Html5.F in
@@ -73,16 +78,30 @@ let facebook_login_button =
 (* Header Navbar html skeleton *)
 (* unit -> html_stuff Lwt.t *)
 (* TODO: get the name in the top right corner to show up as white *)
+(* TODO: I have a photo, it is showing up, but not at the same time as the words *)
 let header_navbar_skeleton (u : Facebook.user) =
   let open Facebook in
   let login_button_or_welcome =
-      match u.verified with
-      | Some true ->
+      match (u.verified, u.profile_photo) with
+      | (Some true, Some photo) ->
+          (li ~a:[a_class ["user_name_and_photo"]]
+           [p ~a:[a_class ["user_name"]]
+            [pcdata ((string_of_option u.first_name) ^ " " ^ (string_of_option u.last_name) ^ "  ")];
+            ext_img photo "Facebook Profile Picture"]
+          )
+          (*
+          (li [ext_img photo "Main Profile Picture"];
+           li
+           [h2 [pcdata ((string_of_option u.first_name) ^ " " ^ (string_of_option u.last_name))]
+           ] (* /li *)
+          )
+          *)
+      | (Some true, None) ->
           (li
            [h2 [pcdata ((string_of_option u.first_name) ^ " " ^ (string_of_option u.last_name))]
            ] (* /li *)
           )
-      | _ -> (li [facebook_login_button])
+      | (_, _) -> (li [facebook_login_button])
   in
   nav ~a:[a_class ["navbar navbar-inverse navbar-fixed-top"]]
   [div ~a:[a_class ["container-fluid"]]
