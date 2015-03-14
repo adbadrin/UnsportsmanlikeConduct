@@ -14,6 +14,9 @@ open Eliom_content
 open Eliom_parameter
 open Html5.D
 
+let new_game_service =
+  Eliom_service.Http.service ~path:["new_game"] ~get_params:unit ()
+
 (* Get string from string option *)
 let string_of_option so =
   match so with
@@ -34,11 +37,6 @@ module UC_app =
     struct
       let application_name = "UC"
     end)
-
-
-(* Login page service *)
-let login_page_service =
-  Eliom_service.App.service ~path:["login"] ~get_params:Eliom_parameter.unit ()
 
 
 (* create a link *)
@@ -65,7 +63,7 @@ let ext_img image_link description =
   img ~alt:description ~src:(Xml.uri_of_string image_link) ()
 
 
-(* facebook login button *)
+(* Facebook login button *)
 let facebook_login_button =
   let open Html5.F in
   div ~a:[a_class ["btn-group"]]
@@ -75,10 +73,17 @@ let facebook_login_button =
   ] (* /div *)
 
 
+(* Start New Game button *)
+let new_game_button =
+  (*Eliom_content.Html5.F.a new_game_service [pcdata "shit"] ()*)
+  let open Html5.F in
+  div ~a:[a_class ["btn btn-default btn-lg"; "shadow_button"]]
+  [a new_game_service [pcdata "Start a New Game!"] ()
+  ] (* /div *)
+
+
 (* Header Navbar html skeleton *)
 (* unit -> html_stuff Lwt.t *)
-(* TODO: get the name in the top right corner to show up as white *)
-(* TODO: I have a photo, it is showing up, but not at the same time as the words *)
 let header_navbar_skeleton (u : Facebook.user) =
   let open Facebook in
   let login_button_or_welcome =
@@ -89,13 +94,6 @@ let header_navbar_skeleton (u : Facebook.user) =
             [pcdata ((string_of_option u.first_name) ^ " " ^ (string_of_option u.last_name) ^ "  ")];
             ext_img photo "Facebook Profile Picture"]
           )
-          (*
-          (li [ext_img photo "Main Profile Picture"];
-           li
-           [h2 [pcdata ((string_of_option u.first_name) ^ " " ^ (string_of_option u.last_name))]
-           ] (* /li *)
-          )
-          *)
       | (Some true, None) ->
           (li
            [h2 [pcdata ((string_of_option u.first_name) ^ " " ^ (string_of_option u.last_name))]
@@ -224,25 +222,26 @@ let main =
            ](* /body *))))
 
 
-(* Register login_page_service *)
+(* Register new_game_service *)
 let () =
-  UC_app.register
-    ~service:login_page_service
+  Eliom_registration.Html5.register
+    ~service:new_game_service
     (fun () () ->
+      Eliom_reference.get Facebook.user_info
+      >>= fun user ->
       Lwt.return
         (Eliom_tools.F.html
-          ~title:"Unsportsmanlike Conduct - Register"
+          ~title:"Unsportsmanlike Conduct - Start a New Game"
           ~css:[["css"; "UC.css"]]
           ~other_head:[bootstrap_cdn_link; font_awesome_cdn_link]
           Html5.F.(
-          body
-          [(*header_navbar_skeleton;*)
+          body ~a:[a_class ["transparent"]]
+          [header_navbar_skeleton user;
            div ~a:[a_class ["container"; "margin_top_50px"]]
            [div ~a:[a_class ["page-header"]]
-            [h1 [pcdata "Login"]
+            [h1 ~a:[a_class ["new_game"]] [pcdata "Start a New Game"]
             ] (* /div *)
-           ]; (* /div *)
-           login_form_container
+           ] (* /div *)
           ] (* /body *)
           )
         )
@@ -277,12 +276,13 @@ let gameplay =
           ~css:[["css"; "UC.css"]]
           ~other_head:[bootstrap_cdn_link; font_awesome_cdn_link]
           Html5.F.(
-           body
+           body ~a:[a_class ["transparent"]]
            [header_navbar_skeleton user;
             div ~a:[a_class ["container"; "margin_top_50px"]]
             [div ~a:[a_class ["page-header"]]
              [h1 [pcdata (welcome_message user)];
-              h1 [pcdata ("access_token = " ^ (string_of_option user.access_token))]
+              h3 [pcdata "What would you like to do?"];
+              new_game_button
              ] (* /div *)
             ] (* /div *)
            ] (* /body *)

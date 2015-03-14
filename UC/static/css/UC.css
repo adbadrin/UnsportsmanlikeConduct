@@ -24,7 +24,7 @@ html {
 }
 
 .user_name_and_photo {
-  padding-bottom: 0.5em
+  padding-bottom: 0.5em;
 }
 
 .user_name {
@@ -33,4 +33,20 @@ html {
 	float: left;
 	padding-right: 1em;
 	padding-top: 0.6em;
+}
+
+.shadow_button {
+	font-weight: bold;
+  box-shadow: 0 0 1.5em 0.5em rgba(0, 0, 0, 0.35);
+}
+
+.transparent {
+  background-color: transparent;
+}
+
+.new_game {
+  color: white;
+	float: center;
+	font-size: 500%;
+  font-weight: bold;	
 }

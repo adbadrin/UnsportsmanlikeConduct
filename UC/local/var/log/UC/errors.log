@@ -8,3 +8,5 @@ Mar  7 14:01:55: main: Fatal - Error in configuration file: Error while parsing 
 Mar  7 14:01:55: main: Reference to undefined global `Facebook'
 Mar  7 14:02:16: main: Fatal - Error in configuration file: Error while parsing configuration file: Eliom: while loading local/lib/UC/UC.cma: error while linking local/lib/UC/UC.cma.
 Mar  7 14:02:16: main: Reference to undefined global `Facebook'
+Mar 13 18:30:48: main: Eliom: in site / - One service or coservice has not been registered on URL /login. 
+Mar 13 18:30:48: main: Please correct your modules and make sure you have linked in all the modules...
