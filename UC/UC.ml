@@ -5,7 +5,7 @@
 
 (* TODO: Populate user_info with all information *)
 (* TODO: Replace all Facebook functions with calls to the same functions in Facebook.ml *)
-(* TODO: Add user photo to header_navbar_skeleton *)
+(* TODO: Maybe need to move user info ref to this module. User is logged out when going to new_game after already being logged in. I think that the ref is not being stored properly and the data is being lost since the ref is in another module. *)
 
 (* NOTE: All functions outside of services are designed to take a user, not a user Lwt.t *)
 
@@ -75,7 +75,6 @@ let facebook_login_button =
 
 (* Start New Game button *)
 let new_game_button =
-  (*Eliom_content.Html5.F.a new_game_service [pcdata "shit"] ()*)
   let open Html5.F in
   div ~a:[a_class ["btn btn-default btn-lg"; "shadow_button"]]
   [a new_game_service [pcdata "Start a New Game!"] ()
@@ -154,39 +153,56 @@ let display_user_info = Eliom_registration.Html5.register_service
   )
 
 
-(* Login form *)
-let login_form =
+(* New Game form *)
+(* TODO: Need # players, # cards, Max time per player, penalty yards to win *)
+let new_game_form =
   get_form display_user_info
     (fun () ->
-      [div ~a:[a_class ["form-group"]]
-       [div ~a:[a_class ["input-group"]]
-        [Raw.span ~a:[a_class ["input-group-addon"]]
-         [Raw.span ~a:[a_class ["glyphicon glyphicon-envelope"]] []
-         ]; (* /span *)
-         raw_input ~a:[a_class ["form-control"]; a_placeholder "Email Address"]
-                   ~input_type:`Text ~name:"email_address" ()
-        ] (* /div *)
-       ]; (* /div *)
+      [
        div ~a:[a_class ["form-group"]]
        [div ~a:[a_class ["input-group"]]
         [Raw.span ~a:[a_class ["input-group-addon"]]
-         [Raw.span ~a:[a_class ["glyphicon glyphicon-lock"]] []
+         [Raw.span ~a:[a_class ["glyphicon glyphicon-flag"]] []
          ]; (* /span *)
-         raw_input ~a:[a_class ["form-control"]; a_placeholder "Password"]
-                   ~input_type:`Password ~name:"password" ()
+         raw_input ~a:[a_class ["form-control"]; a_placeholder "Game Name"]
+                   ~input_type:`Text ~name:"email_address" ()
         ] (* /div *)
        ]; (* /div *)
+
+       div ~a:[a_class ["btn-toolbar"]]
+       [h4 ~a:[a_class ["num_of_players"]] [pcdata "Number of Players"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "1"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "2"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "3"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "4"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "5"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "6"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "7"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "8"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "9"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "10"];
+       ];
+
+       div ~a:[a_class ["btn-toolbar"]]
+       [h4 ~a:[a_class ["num_of_players"]] [pcdata "Number of Cards"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "4"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "5"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "6"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "7"];
+        div ~a:[a_class ["btn btn-default"]] [pcdata "8"];
+       ];
+
       ]
     )
 
 
-(* Container for login_form *)
-let login_form_container =
+(* Container for new_game_form *)
+let new_game_form_container =
   div ~a:[a_class ["container"]]
   [div ~a:[a_class ["col-md-4 col-md-offset-4"]]
    [div ~a:[a_class ["panel panel-default"]]
     [div ~a:[a_class ["panel-body"]]
-     [login_form
+     [new_game_form
      ] (* /div *)
     ] (* /div *)
    ] (* /div *)
@@ -208,7 +224,7 @@ let main =
            ~css:[["css"; "UC.css"]]
            ~other_head:[bootstrap_cdn_link; font_awesome_cdn_link]
            Html5.F.(
-           body
+           body ~a:[a_class ["transparent"]]
            [header_navbar_skeleton user;
             div ~a:[a_class ["container"; "margin_top_50px"; "padding_top_50px"]]
             [div ~a:[a_class ["jumbotron"]]
@@ -239,7 +255,8 @@ let () =
           [header_navbar_skeleton user;
            div ~a:[a_class ["container"; "margin_top_50px"]]
            [div ~a:[a_class ["page-header"]]
-            [h1 ~a:[a_class ["new_game"]] [pcdata "Start a New Game"]
+            [h1 ~a:[a_class ["new_game"]] [pcdata "Start a New Game"];
+             new_game_form_container
             ] (* /div *)
            ] (* /div *)
           ] (* /body *)
@@ -279,7 +296,7 @@ let gameplay =
            body ~a:[a_class ["transparent"]]
            [header_navbar_skeleton user;
             div ~a:[a_class ["container"; "margin_top_50px"]]
-            [div ~a:[a_class ["page-header"]]
+            [div ~a:[a_class ["page-header"; "new_game"]]
              [h1 [pcdata (welcome_message user)];
               h3 [pcdata "What would you like to do?"];
               new_game_button

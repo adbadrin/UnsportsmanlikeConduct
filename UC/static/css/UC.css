@@ -50,3 +50,12 @@ html {
 	font-size: 500%;
   font-weight: bold;	
 }
+
+.num_of_players {
+  float: left;
+	padding-right: 0.5em;
+}
+
+.num_plrs_btn {
+  font-weight: bold;
+}
