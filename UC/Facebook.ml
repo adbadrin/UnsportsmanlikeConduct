@@ -27,6 +27,9 @@ type permissions = {public_profile : bool option;
                     user_photos : bool option;
                     friendlist_id: string option}
 
+(* Friends list type *)
+type friends_list = (string * int) list option
+
 
 (* Default verification_result to seed the user_info ref *)
 let initial_user_info = {first_name = None; last_name = None; uc_username = None;
@@ -40,6 +43,7 @@ let initial_permissions = {public_profile = None; photo = None; user_photos = No
 
 
 (* Refs for user session data *)
+(*
 let user_info =
   Eliom_reference.eref ~scope:Eliom_common.default_process_scope
                        ~secure:true
@@ -50,16 +54,17 @@ let user_permissions =
   Eliom_reference.eref ~scope:Eliom_common.default_process_scope
                        ~secure:true
                        initial_permissions
+*)
 
 
 (* Functions to update Eliom ref fields - this seems sloppy, there must be a better way to do this *)
 
-(* update_public_profile : bool option -> unit Lwt.t *)
-let update_public_profile x =
-  Eliom_reference.get user_permissions
+(* update_public_profile : permissions eref -> bool option -> unit Lwt.t *)
+let update_public_profile user_perms b_opt =
+  Eliom_reference.get user_perms
   >>= fun up ->
-    Eliom_reference.set user_permissions
-                        {public_profile = x; photo = up.photo; user_photos = up.user_photos;
+    Eliom_reference.set user_perms
+                        {public_profile = b_opt; photo = up.photo; user_photos = up.user_photos;
                          friendlist_id = up.friendlist_id}
 
 
@@ -119,9 +124,9 @@ let verify_user code_parameter =
 
 (* Get the users info from the graph api node /me and populate the fields in user_info *)
 (* Note: Can't use Eliom_reference.modify b/c the user reference scope is default_process_scope *)
-(* update_user_info : unit -> unit Lwt.t *)
-let update_user_info () =
-  Eliom_reference.get user_info
+(* update_user_info : user_info eref -> unit Lwt.t *)
+let update_user_info u_info =
+  Eliom_reference.get u_info
   >>= fun u -> match u.access_token with
   | Some acc_tkn ->
       let me_uri = Uri.of_string ("https://graph.facebook.com/me?access_token=" ^ acc_tkn) in
@@ -133,7 +138,7 @@ let update_user_info () =
         (* TODO: Get other fields from facebook and add them here *)
         let fn = json_string |> member "first_name" |> to_string in
         let ln = json_string |> member "last_name" |> to_string in
-        Eliom_reference.set user_info
+        Eliom_reference.set u_info
                             {first_name = Some fn; last_name = Some ln;
                              uc_username = u.uc_username;
                              email_address = u.email_address;
@@ -144,24 +149,43 @@ let update_user_info () =
   | None -> Lwt.return ()
 
 
+(* Update the users friends list *) 
+(*
+let update_friends_list u_info =
+  Eliom_reference.get u_info
+  >>= fun u -> match u.access_token with
+  | Some acc_tkn ->
+      let friends_list_uri =
+        Uri.of_string ("https://graph.facebook.com/me/friends?access_token=" ^ acc_tkn)
+      in
+      let open Yojson.Basic.Util in
+      Cohttp_lwt_unix.Client.get friends_list_uri
+      >>= fun (a, b) -> b |> Cohttp_lwt_body.to_string
+      >>= fun s -> Yojson.Basic.from_string s |> Lwt.return
+      >>= fun json_assoc ->
+        json_assoc |> member "data" |>
+  | None -> Lwt.return "unit"
+  *)
+
+
 (* Update the user photo in the permissions *)
-(* update_profile_photo : unit -> unit Lwt.t *)
-let update_profile_photo () =
+(* update_profile_photo : permissions eref -> unit Lwt.t *)
+let update_profile_photo u_info user_perms =
   let update_photo new_photo =
-    Eliom_reference.get user_permissions
+    Eliom_reference.get user_perms
     >>= fun up ->
-      Eliom_reference.set user_permissions
+      Eliom_reference.set user_perms
                           {public_profile = up.public_profile; photo = Some new_photo;
                            user_photos = up.user_photos; friendlist_id = up.friendlist_id}
-    >>= fun () -> Eliom_reference.get user_info
+    >>= fun () -> Eliom_reference.get u_info
     >>= fun u ->
-      Eliom_reference.set user_info
+      Eliom_reference.set u_info
                           {first_name = u.first_name; last_name = u.last_name;
                            uc_username = u.uc_username; email_address = u.email_address;
                            profile_photo = Some new_photo; access_token = u.access_token;
                            expires = u.expires; verified = u.verified}
   in
-  Eliom_reference.get user_info
+  Eliom_reference.get u_info
   >>= fun u -> match u.access_token with
   | Some acc_tkn ->
       let photo_uri =
@@ -181,8 +205,9 @@ let update_profile_photo () =
   | None -> Lwt.return ()
 
 (* Update the users permissions *)
-let update_user_permissions () =
-  Eliom_reference.get user_info
+(* update_user_permissions : user eref -> unit Lwt.t *)
+let update_user_permissions u_info user_perms =
+  Eliom_reference.get u_info
   >>= fun u -> match u.access_token with
   | Some acc_tkn ->
       let perm_uri =
@@ -203,5 +228,5 @@ let update_user_permissions () =
           with _ ->
             None
         in
-        update_public_profile pub_prof_perm
+        update_public_profile user_perms pub_prof_perm
   | None -> Lwt.return ()

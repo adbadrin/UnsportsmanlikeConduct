@@ -59,3 +59,9 @@ html {
 .num_plrs_btn {
   font-weight: bold;
 }
+
+.main_page {
+	background-color: black;
+	margin-top: 0.25em;
+	height: 2em;
+}

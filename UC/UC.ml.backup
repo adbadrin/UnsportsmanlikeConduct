@@ -5,7 +5,7 @@
 
 (* TODO: Populate user_info with all information *)
 (* TODO: Replace all Facebook functions with calls to the same functions in Facebook.ml *)
-(* TODO: Add user photo to header_navbar_skeleton *)
+(* TODO: Maybe need to move user info ref to this module. User is logged out when going to new_game after already being logged in. I think that the ref is not being stored properly and the data is being lost since the ref is in another module. *)
 
 (* NOTE: All functions outside of services are designed to take a user, not a user Lwt.t *)
 
@@ -14,14 +14,44 @@ open Eliom_content
 open Eliom_parameter
 open Html5.D
 
+
+(* Refs for user session data *)
+let user_info =
+  let open Facebook in
+  Eliom_reference.eref ~scope:Eliom_common.default_group_scope
+                       ~secure:true
+                       {first_name = None; last_name = None; uc_username = None;
+                        email_address = None; profile_photo = None; access_token = None;
+                        expires = None; verified = None}
+
+
+let user_permissions =
+  let open Facebook in
+  Eliom_reference.eref ~scope:Eliom_common.default_group_scope
+                       ~secure:true
+                       {public_profile = None; photo = None; user_photos = None;
+                        friendlist_id = None}
+
+(* Serivce creation *)
 let new_game_service =
   Eliom_service.Http.service ~path:["new_game"] ~get_params:unit ()
+
+let main_page_service =
+  Eliom_service.Http.service ~path:["main"] ~get_params:unit ()
+
 
 (* Get string from string option *)
 let string_of_option so =
   match so with
   | Some s -> s
   | None -> ""
+
+
+(* Get bool from bool option *)
+let bool_of_option bo =
+  match bo with
+  | Some true -> true
+  | _ -> false
 
 
 (* Link to Facebook sign in with redirect *)
@@ -73,10 +103,18 @@ let facebook_login_button =
   ] (* /div *)
 
 
+(* Main page button *)
+let main_page_button =
+  let open Html5.F in
+  div ~a:[a_class ["btn btn-default btn-lg"; "main_page"]]
+  [a main_page_service [pcdata "Home"] ()
+  ] (* /div *)
+
+
 (* Start New Game button *)
 let new_game_button =
   let open Html5.F in
-  div ~a:[a_class ["btn btn-default btn-lg"; "shadow_button"]]
+  div ~a:[a_class ["btn btn-default btn-lg"; "main_page"]]
   [a new_game_service [pcdata "Start a New Game!"] ()
   ] (* /div *)
 
@@ -91,7 +129,8 @@ let header_navbar_skeleton (u : Facebook.user) =
           (li ~a:[a_class ["user_name_and_photo"]]
            [p ~a:[a_class ["user_name"]]
             [pcdata ((string_of_option u.first_name) ^ " " ^ (string_of_option u.last_name) ^ "  ")];
-            ext_img photo "Facebook Profile Picture"]
+             ext_img photo "Facebook Profile Picture"
+           ]
           )
       | (Some true, None) ->
           (li
@@ -100,9 +139,12 @@ let header_navbar_skeleton (u : Facebook.user) =
           )
       | (_, _) -> (li [facebook_login_button])
   in
+  let new_gm_btn = if (bool_of_option u.verified) then new_game_button else (pcdata "") in
   nav ~a:[a_class ["navbar navbar-inverse navbar-fixed-top"]]
   [div ~a:[a_class ["container-fluid"]]
    [div ~a:[a_class ["navbar-header"]] [];
+    main_page_button;  (**)
+    new_gm_btn;
     ul ~a:[a_class ["nav navbar-nav navbar-right"; "fb_login"]]
     [login_button_or_welcome
     ] (* /ul *)
@@ -171,8 +213,6 @@ let new_game_form =
 
        div ~a:[a_class ["btn-toolbar"]]
        [h4 ~a:[a_class ["num_of_players"]] [pcdata "Number of Players"];
-        div ~a:[a_class ["btn btn-default"]] [pcdata "1"];
-        div ~a:[a_class ["btn btn-default"]] [pcdata "2"];
         div ~a:[a_class ["btn btn-default"]] [pcdata "3"];
         div ~a:[a_class ["btn btn-default"]] [pcdata "4"];
         div ~a:[a_class ["btn btn-default"]] [pcdata "5"];
@@ -210,13 +250,12 @@ let new_game_form_container =
 
 
 (* Register main_page_service *)
-let main =
-  Eliom_registration.Html5.register_service
-    ~path:["main"]
-    ~get_params:unit
+let () =
+  Eliom_registration.Html5.register
+    ~service:main_page_service
     (fun () () ->
       (* Kick off the thread *)
-      Eliom_reference.get Facebook.user_info
+      Eliom_reference.get user_info
       >>= fun user ->
       Lwt.return
         (Eliom_tools.F.html
@@ -243,7 +282,7 @@ let () =
   Eliom_registration.Html5.register
     ~service:new_game_service
     (fun () () ->
-      Eliom_reference.get Facebook.user_info
+      Eliom_reference.get user_info
       >>= fun user ->
       Lwt.return
         (Eliom_tools.F.html
@@ -277,13 +316,13 @@ let gameplay =
       (* string -> user Lwt.t *) (* Kick off the thread *)
       Facebook.verify_user fb_code
       (* user -> eref -> unit Lwt.t *) (* Set user_info *)
-      >>= fun u -> Eliom_reference.set Facebook.user_info u
+      >>= fun u -> Eliom_reference.set user_info u
       (* unit -> unit Lwt.t *) (* Update user_info *)
-      >>= fun () -> Facebook.update_user_info ()
+      >>= fun () -> Facebook.update_user_info user_info
       (* unit -> unit Lwt.t *) (* Update the users photo *)
-      >>= fun () -> Facebook.update_profile_photo ()
+      >>= fun () -> Facebook.update_profile_photo user_info user_permissions
       (* unit -> Facebook.user Lwt.t *)
-      >>= fun () -> Eliom_reference.get Facebook.user_info
+      >>= fun () -> Eliom_reference.get user_info
       (* Facebook.user -> html_stuff Lwt.t *)
       >>= fun user ->
       Lwt.return
