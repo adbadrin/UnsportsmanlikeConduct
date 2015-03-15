@@ -900,3 +900,8 @@ Mar 13 23:43:15: main: Launching a new Ocsidbm process: /home/alpha/.opam/4.01.0
 Mar 13 23:43:16: main: ...Initialization of Ocsipersist-dbm complete
 Mar 13 23:43:16: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "alpha"
 Mar 13 23:43:16: main: Ocsigen has been launched (initialisations ok)
+Mar 15 11:07:36: main: Initializing Ocsipersist-dbm...
+Mar 15 11:07:36: main: Launching a new Ocsidbm process: /Users/abadrinath/.opam/system/lib/ocsigenserver/extensions/ocsidbm on directory local/var/data/UC/ocsipersist.
+Mar 15 11:07:37: main: ...Initialization of Ocsipersist-dbm complete
+Mar 15 11:07:38: main: While parsing config file, tag <host>: No defaulthostname, assuming it is "adityas-air.home"
+Mar 15 11:07:38: main: Ocsigen has been launched (initialisations ok)
