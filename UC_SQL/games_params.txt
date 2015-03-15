@@ -1,0 +1,11 @@
+Games Database
+1. start_time
+2. end_time
+3. number of hands played
+4. number of hands to win
+5. was game completed?
+6. number of players
+7. player facebook_ids
+8. winning cards
+9. host facebook_id
+10. number of cards per hand

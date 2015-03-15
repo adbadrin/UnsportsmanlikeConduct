@@ -1,0 +1,14 @@
+User Parameters
+1. facebook_id (guarenteed to be unique)
+2. first name
+3. last name
+4. gender
+5. uc_player_name
+6. number of games won
+7. number of games played
+8. number of times hosted
+9. number of times photo has been played
+10. email address
+11. number of votes on card quality
+12. number of submission
+
