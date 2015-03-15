@@ -1,4 +1,2 @@
-_server/Facebook.cmo :
-_server/Facebook.cmx :
 _server/UC.cmo : _server/Facebook.cmo
 _server/UC.cmx : _server/Facebook.cmx

@@ -1,0 +1,10 @@
+Card Parameters:
+0. Card ID Num
+1. Card text
+2. Theme
+3. Times dealt
+4. Times played
+5. Times not played
+6. Times won the round
+7. Times thumbsed up
+8. Times thumbs down
