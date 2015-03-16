@@ -17,8 +17,8 @@ type user_write_result = Success of user_info | Failure of user_info
 
 
 (* Database *)
-let user_db = {dbhost = None; dbname = Some "News_db"; dbport = Some 3306; dbpwd = Some "pass_here";
-               dbuser = Some "root"; dbsocket = None}
+let user_db = {dbhost = None; dbname = Some "UC_DB"; dbport = Some 3306;
+               dbpwd = None; dbuser = Some "root"; dbsocket = None}
 
 
 (* Check if username, or e-mail address already exist in database *)
