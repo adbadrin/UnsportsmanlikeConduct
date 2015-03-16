@@ -3,6 +3,7 @@
 (* case sensitive : password *)
 (* not case sensitive : username, email_address *)
 
+(* to launch the MySQL monitor: mysql -u root -p *)
 
 open Mysql
 
